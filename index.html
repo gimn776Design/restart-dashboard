@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#183a37" />
+  <meta name="description" content="시작·복귀·자립의 추세를 기록하는 개인 실행 계기판" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>다시, 시작</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#today" aria-label="오늘 화면으로"><span class="brand-mark">↗</span><span>다시, 시작</span></a>
+    <nav aria-label="주요 화면">
+      <button class="nav-btn active" data-view="today">오늘</button>
+      <button class="nav-btn" data-view="dashboard">흐름</button>
+      <button class="nav-btn" data-view="system">시스템</button>
+    </nav>
+    <button id="installBtn" class="install hidden">앱 설치</button>
+  </header>
+
+  <main>
+    <section id="today" class="view active">
+      <div class="hero">
+        <div>
+          <div class="date-nav"><button id="prevDate" type="button" aria-label="이전 날짜">‹</button><button id="calendarToggle" class="calendar-toggle" type="button"><span class="eyebrow" id="todayLabel"></span><span aria-hidden="true">▾</span></button><button id="nextDate" type="button" aria-label="다음 날짜">›</button><button id="goToday" type="button">오늘</button></div>
+          <div id="calendarPanel" class="calendar-panel hidden">
+            <div class="calendar-head"><button id="prevMonth" type="button" aria-label="이전 달">‹</button><strong id="calendarMonthLabel"></strong><button id="nextMonth" type="button" aria-label="다음 달">›</button></div>
+            <div class="calendar-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+            <div id="calendarGrid" class="calendar-grid"></div>
+            <div class="calendar-legend"><span><i class="plan-dot"></i>할 일 있음</span><span><i class="done-dot"></i>완료 기록 있음</span></div>
+          </div>
+          <h1 id="dateQuestion">오늘은 무엇을<br /><em>시작</em>할까요?</h1>
+          <p class="sub">결정은 내가 합니다. AI는 막힐 때 생각을 정리하는 보조 도구입니다.</p>
+        </div>
+        <div class="streak-card" aria-label="현재 연속 실행일">
+          <span>연속 실행</span><strong id="heroStreak">0</strong><small>일</small>
+        </div>
+      </div>
+
+      <div class="layout">
+        <form id="dailyForm" class="card focus-card">
+          <div class="card-title"><span class="step">01</span><div><h2>오늘의 단 하나</h2><p>이것만 시작해도 오늘은 전진입니다.</p></div></div>
+          <div id="actionList" class="action-list" aria-label="오늘의 행동 목록"></div>
+          <button type="button" id="addActionBtn" class="add-action">＋ 한 일 추가</button>
+
+          <div class="quick-row">
+            <fieldset>
+              <legend>작업 환경</legend>
+              <label class="choice"><input type="radio" name="workMode" value="solo" checked /><span>혼자 작업</span></label>
+              <label class="choice"><input type="radio" name="workMode" value="together" /><span>함께 각자 작업</span></label>
+            </fieldset>
+            <label class="project-select">프로젝트
+              <select id="projectId"></select>
+            </label>
+          </div>
+
+          <div class="timer-panel">
+            <div><span class="timer-caption">10분만 시작</span><strong id="timerDisplay">10:00</strong><small id="timerHint">완성 말고, 착수</small></div>
+            <button type="button" id="timerBtn" class="primary">10분 시작</button>
+            <button type="button" id="timerReset" class="icon-btn" aria-label="타이머 초기화">↺</button>
+          </div>
+
+          <div class="completion-row">
+            <label>실제 집중시간 <span><input id="focusMinutes" type="number" min="0" max="1440" placeholder="0" /> 분</span></label>
+            <label class="check"><input id="started" type="checkbox" /><span>착수했어요</span></label>
+          </div>
+
+          <details class="reflection">
+            <summary>짧게 돌아보기 <span>선택</span></summary>
+            <div class="fields">
+              <fieldset class="mood-field wide"><legend>오늘 기분</legend><div id="moodChoices" class="mood-choices"><label><input type="radio" name="mood" value="1" /><span>😞<small>1</small></span></label><label><input type="radio" name="mood" value="2" /><span>😕<small>2</small></span></label><label><input type="radio" name="mood" value="3" /><span>😐<small>3</small></span></label><label><input type="radio" name="mood" value="4" /><span>🙂<small>4</small></span></label><label><input type="radio" name="mood" value="5" /><span>😊<small>5</small></span></label></div></fieldset>
+              <label>오늘의 한 줄<input id="oneLine" maxlength="160" placeholder="오늘을 한 문장으로" /></label>
+              <label>배운 것<textarea id="learned" rows="2"></textarea></label>
+              <label>막힌 것<textarea id="blocked" rows="2"></textarea></label>
+              <label>내가 해결한 것<textarea id="solved" rows="2"></textarea></label>
+              <label class="wide resilience-field">그러나, 그럼에도<textarea id="nevertheless" rows="3" placeholder="어려움이 있었지만 어떻게 해냈나요? 어떤 마음으로 다시 움직였나요?"></textarea><small>결과보다 내가 사용한 방식과 마음을 남겨보세요.</small></label>
+              <label>AI 도움받은 것<textarea id="aiHelp" rows="2" placeholder="AI가 결정한 것이 아니라, 내가 도움받은 부분"></textarea></label>
+              <label class="wide">내일 첫 행동<input id="tomorrowFirst" maxlength="160" placeholder="내일 고민 없이 바로 할 첫 동작" /></label>
+              <label>자립도 <select id="independence"><option value="">선택 안 함</option><option value="1">1 · 거의 도움에 의존</option><option value="2">2 · 안내를 따라 실행</option><option value="3">3 · 일부는 스스로 해결</option><option value="4">4 · 대부분 스스로 판단</option><option value="5">5 · 스스로 시작·해결·복귀</option></select></label>
+              <label>동기 <select id="motivation"><option value="">선택 안 함</option><option value="1">1 · 매우 낮음</option><option value="2">2 · 낮음</option><option value="3">3 · 보통</option><option value="4">4 · 높음</option><option value="5">5 · 매우 높음</option></select></label>
+            </div>
+          </details>
+
+          <div class="form-footer">
+            <button type="button" id="moveDayBtn" class="text-btn move-day-btn">날짜 전체 기록 이동</button>
+            <button type="button" id="interruptBtn" class="text-btn">오늘 중단 표시</button>
+            <span id="saveState" role="status">자동 저장됨</span>
+            <button type="submit" class="save-btn">오늘 기록 저장</button>
+          </div>
+        </form>
+
+        <aside>
+          <div class="card return-card">
+            <span class="eyebrow">복귀 근육</span>
+            <h3 id="returnTitle">중단해도 괜찮아요.</h3>
+            <p id="returnCopy">중요한 건 흐트러지지 않는 것이 아니라, 다시 시작하기까지의 시간을 줄이는 것입니다.</p>
+            <button id="returnBtn" class="secondary hidden">지금 다시 시작</button>
+          </div>
+          <div class="card quote-card"><p>“가벼움은 성격이 아니라<br />연습할 수 있는 기술이다.”</p><span>의미는 나중에, 증거는 오늘</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="dashboard" class="view">
+      <div class="section-head"><div><p class="eyebrow">최근 7일</p><h1>성과보다 <em>흐름</em>을 봅니다.</h1></div><p>시작하고, 돌아오고, 조금씩 내 힘으로.</p></div>
+      <div class="metrics">
+        <article class="metric"><span>착수율</span><strong id="startRate">0%</strong><small id="startRateDelta">기록 없음</small></article>
+        <article class="metric"><span>완료율</span><strong id="completeRate">0%</strong><small>시작한 날 기준</small></article>
+        <article class="metric"><span>총 집중시간</span><strong id="totalFocus">0m</strong><small>최근 7일</small></article>
+        <article class="metric"><span>연속 실행</span><strong id="dashStreak">0일</strong><small>착수 기준</small></article>
+      </div>
+      <div class="dashboard-grid">
+        <article class="card chart-card"><div class="card-heading"><div><h2>7일 실행 흐름</h2><p>착수와 집중시간</p></div><div class="legend"><span><i class="dot started-dot"></i>착수</span><span><i class="bar-dot"></i>집중시간</span></div></div><div id="weekChart" class="week-chart"></div></article>
+        <article class="card trend-card"><div class="card-heading"><div><h2>자립도 추세</h2><p>평가가 아닌 관찰</p></div><strong id="independenceAvg">—</strong></div><div id="independenceTrend" class="spark"></div><p class="gentle">낮은 점수도 실패가 아닙니다. 어떤 도움이 필요했는지 알려주는 데이터입니다.</p></article>
+        <article class="card mood-trend-card"><div class="card-heading"><div><h2>기분 흐름</h2><p>좋고 나쁨보다 변화 관찰</p></div><strong id="moodAvg">—</strong></div><div id="moodTrend" class="mood-trend"></div><p class="gentle">기분은 성과 점수가 아닙니다. 어떤 날에도 시작할 수 있었는지 함께 살펴보세요.</p></article>
+        <article class="card recovery-card"><div class="card-heading"><div><h2>복귀시간</h2><p>중단 후 다시 시작까지</p></div><strong id="recoveryLatest">—</strong></div><div id="recoveryList" class="recovery-list"></div></article>
+        <article class="card mode-card"><div class="card-heading"><div><h2>작업 환경</h2><p>혼자서도 시작하는 힘</p></div></div><div class="mode-bars"><div><span>혼자 작업</span><div><i id="soloBar"></i></div><strong id="soloCount">0일</strong></div><div><span>함께 각자</span><div><i id="togetherBar"></i></div><strong id="togetherCount">0일</strong></div></div></article>
+      </div>
+    </section>
+
+    <section id="system" class="view">
+      <div class="section-head"><div><p class="eyebrow">7일 × 12주</p><h1>작게 실행하고,<br /><em>현실의 증거</em>를 쌓습니다.</h1></div></div>
+      <div class="system-grid">
+        <article class="card"><div class="card-heading"><div><h2>프로젝트</h2><p>탐색과 본 프로젝트의 무게를 구분하세요.</p></div><button id="addProjectBtn" class="secondary">+ 추가</button></div><div id="projectList" class="project-list"></div></article>
+        <article class="card cycle-card"><h2>현재 12주 사이클</h2><label>이번 사이클의 방향<input id="cycleGoal" maxlength="160" placeholder="예: 혼자 시작하는 외부 구조 만들기" /></label><label>시작일<input id="cycleStart" type="date" /></label><div class="cycle-progress"><div><i id="cycleProgress"></i></div><span id="cycleText">1주차 / 12주</span></div><div id="weekDots" class="week-dots"></div></article>
+        <article class="card principles"><h2>이 계기판의 원칙</h2><ol><li><b>의욕을 기다리지 않는다.</b><span>10분 구조로 먼저 움직인다.</span></li><li><b>실패보다 복귀를 기록한다.</b><span>중단은 판정이 아니라 데이터다.</span></li><li><b>AI는 보조한다.</b><span>판단과 선택은 내가 한다.</span></li><li><b>탐색에는 의미를 유예한다.</b><span>7일간 60%로 만들고 판단한다.</span></li></ol></article>
+        <article class="card data-card"><h2>내 데이터</h2><p>내보내는 파일 하나에 지금까지의 모든 날짜 기록이 누적됩니다. 가져오기는 현재 기록을 지우지 않고 합칩니다.</p><div><button id="exportBtn" class="secondary">저장 위치 선택해 내보내기</button><button id="importBtn" class="secondary">파일 위치에서 가져오기</button><input id="importInput" class="hidden" type="file" accept="application/json" multiple /></div><small id="backupSummary" class="backup-summary"></small><button id="clearBtn" class="danger-text">모든 데이터 지우기</button></article>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="projectDialog">
+    <form id="projectForm" method="dialog"><div class="dialog-head"><h2>프로젝트 추가</h2><button value="cancel" aria-label="닫기">×</button></div><label>이름<input id="newProjectName" required maxlength="60" placeholder="예: 개인 실행 계기판" /></label><fieldset><legend>프로젝트 모드</legend><label class="mode-option"><input type="radio" name="projectType" value="experiment" checked /><span><b>실험 프로젝트</b><small>7일 · 완성도 60% · 의미 부여 유예</small></span></label><label class="mode-option"><input type="radio" name="projectType" value="main" /><span><b>본 프로젝트</b><small>지속 운영 · 사용자 문제 검증 · 개선</small></span></label></fieldset><div class="dialog-actions"><button value="cancel" class="secondary">취소</button><button id="createProject" value="default" class="save-btn">추가</button></div></form>
+  </dialog>
+  <dialog id="moveActionDialog">
+    <form id="moveActionForm"><div class="dialog-head"><h2>행동 날짜 옮기기</h2><button type="button" id="closeMoveDialog" aria-label="닫기">×</button></div><p id="moveActionName" class="move-action-name"></p><label>옮길 날짜<input id="moveActionDate" type="date" required /></label><p class="move-help">행동의 내용과 완료 상태가 선택한 날짜로 이동합니다. 그날의 기존 기록은 그대로 유지됩니다.</p><div class="dialog-actions"><button type="button" id="cancelMoveAction" class="secondary">취소</button><button type="submit" class="save-btn">이 날짜로 이동</button></div></form>
+  </dialog>
+  <dialog id="moveDayDialog">
+    <form id="moveDayForm"><div class="dialog-head"><h2>날짜 전체 기록 옮기기</h2><button type="button" id="closeMoveDayDialog" aria-label="닫기">×</button></div><p id="moveDaySummary" class="move-action-name"></p><label>옮길 날짜<input id="moveDayDate" type="date" required /></label><p class="move-help">이 날짜의 모든 행동, 완료 상태, 집중시간, 기분과 짧게 돌아보기 내용을 함께 이동합니다. 이동할 날짜에 기록이 있으면 삭제하지 않고 합칩니다.</p><div class="dialog-actions"><button type="button" id="cancelMoveDay" class="secondary">취소</button><button type="submit" class="save-btn">전체 기록 이동</button></div></form>
+  </dialog>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

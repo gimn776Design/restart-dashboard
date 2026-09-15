@@ -1,0 +1,12 @@
+{
+  "name":"다시, 시작 — 개인 실행 계기판",
+  "short_name":"다시, 시작",
+  "description":"시작·복귀·자립의 추세를 기록하는 개인 실행 계기판",
+  "start_url":"./index.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#f5f3ec",
+  "theme_color":"#183a37",
+  "lang":"ko",
+  "icons":[{"src":"icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
